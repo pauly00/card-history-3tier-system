@@ -147,7 +147,7 @@ DataSource ds = ApplicationContextListener.getSourceDataSource(getServletContext
 ```
 ┌──────────────────────────────────────────┐
 │           MySQL Router (Docker)          │
-│   포트 6446 (R/W)       포트 6447 (R/O)    │
+│   포트 6446 (R/W)       포트 6447 (R/O)  │
 └────────┬────────────────────┬────────────┘
          ↓                    ↓
 ┌──────────────────────────────────────────┐
@@ -158,7 +158,7 @@ DataSource ds = ApplicationContextListener.getSourceDataSource(getServletContext
 │  │ PRIMARY  │ │SECONDARY │ │SECONDARY │  │
 │  │  :3310   │ │  :3320   │ │  :3330   │  │
 │  └────┬─────┘ └────┬─────┘ └────┬─────┘  │
-│       └─── 자동 동기화 (복제) ──────┘        │
+│       └─── 자동 동기화 (복제) ──────┘    │
 └──────────────────────────────────────────┘
 ```
 
