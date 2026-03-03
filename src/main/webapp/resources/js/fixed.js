@@ -236,17 +236,61 @@ function submitFixed() {
   const date = document.getElementById('applyMonth').value;
   const userNo = "";
 
+  let successCount = 0;
+  let totalCount = keys.length;
+
   // 서블릿의 단일 업데이트 구조에 맞춰 개별 전송
-  keys.forEach(id => {
+  keys.forEach((id, index) => {
     const payload = {
-      category: id, // 실제 DB 컬럼명 (예: INSU_AMDEC)
-      cost: selected[id].amount,
-      date: date,
+      category: id,
+      amount: selected[id].amount,
+      month: date,
       userNo: userNo
     };
     
-    // AJAX 요청 함수 호출
-    updateFixedCost(payload);
+    // AJAX 요청 (수정된 버전)
+    $.ajax({
+        method: "POST",
+        url: "addfixedcost",
+        data: { 
+            "cost": payload.amount,
+            "category": payload.category,
+            "date": payload.month
+        },
+        success: function(result) {
+            if (typeof result === 'string') {
+                try {
+                    result = JSON.parse(result);
+                } catch(e) {}
+            }
+            
+            if (result.status === 'success') {
+                successCount++;
+            }
+            
+            // 마지막 항목 처리 완료 시
+            if (index === totalCount - 1) {
+                if (successCount === totalCount) {
+                    showToast('✅ 고정지출이 등록되었습니다.');
+                    setTimeout(() => {
+                        location.href = "index.html"; 
+                    }, 1500);
+                } else {
+                    alert(`일부 항목 등록 실패 (성공: ${successCount}/${totalCount})`);
+                }
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status !== 401) {
+                console.error("서버 통신 에러:", xhr.status);
+            }
+            
+            // 마지막 항목 처리 완료 시
+            if (index === totalCount - 1) {
+                alert(`일부 항목 등록 실패 (성공: ${successCount}/${totalCount})`);
+            }
+        }
+    });
   });
 }
 

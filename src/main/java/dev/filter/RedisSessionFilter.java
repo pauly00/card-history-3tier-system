@@ -2,7 +2,6 @@ package dev.filter;
 
 import redis.clients.jedis.Jedis;
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.*;
 import java.io.*;
 import java.util.*;
@@ -11,7 +10,6 @@ import java.util.*;
  * Servlet 코드를 수정하지 않고 세션을 Redis로 위임하는 필터입니다.
  * (JedisPool 에러 제거, Gson 에러 제거, Java 기본 직렬화 적용 완료 버전)
  */
-@WebFilter("/*")
 public class RedisSessionFilter implements Filter {
     
     // Redis 접속 정보 (도커 환경의 localhost 포워딩 포트)
@@ -31,7 +29,7 @@ public class RedisSessionFilter implements Filter {
 
         // 정적 파일(css, js, 이미지 등)은 세션 처리를 생략하여 속도를 높이고 로그 도배를 막습니다.
         String uri = httpRequest.getRequestURI();
-        if (uri.matches(".*\\.(css|png|jpg|jpeg|gif|ico)$")) {
+        if (uri.matches(".*\\.(css|js|png|jpg|jpeg|gif|ico)$")) {
             chain.doFilter(request, response);
             return;
         }
@@ -114,6 +112,8 @@ public class RedisSessionFilter implements Filter {
         private void addSessionCookie(String sid) {
             Cookie c = new Cookie(COOKIE_NAME, sid);
             c.setPath("/");
+            c.setHttpOnly(true);  // XSS 방지
+            c.setMaxAge(-1);  // 브라우저 세션 동안 유지
             response.addCookie(c);
         }
     }

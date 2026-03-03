@@ -1,30 +1,51 @@
+
+
+/**
+ * 월별 지출 내역 로드
+ */
 function getReportMonthsExpense(userNo, date) {
+    // 만약 파라미터로 넘어온 userNo가 비어있다면, 로컬 스토리지에서 꺼내 쓰는 안전장치
+    const finalUserNo = userNo || sessionStorage.getItem("userNo") || "";
+
     $.ajax({
         method: "GET",
         url: "paymentmonths",
-        data: { "date": date, "userNo": userNo },
+        data: { 
+            "date": date,
+            "userNo": finalUserNo // userNo=:1 방지용
+        },
         success: function(data) {
             currentData = transformData(data); 
             renderAll(currentData);
         },
         error: function(xhr) {
-            alert("데이터 로드 실패: " + xhr.status);
+            if (xhr.status !== 401) { // 401은 위 ajaxSetup에서 이미 처리함
+                alert("데이터 로드 실패: " + xhr.status);
+            }
         }
     });
 }
 
+/**
+ * 결제 날짜(분기/월) 목록 로드
+ */
 function getPaymentDates(userNo) {
-	$.ajax({
+    const finalUserNo = userNo || sessionStorage.getItem("userNo") || "";
+
+    $.ajax({
         method: "GET",
         url: "paymentDates",
-        data: { "userNo": userNo },
+        data: { "userNo": finalUserNo },
         success: function(dates) {
-			MONTHS = dates;
-			initSelect();
-			getReportMonthsExpense("", getSelected());
+            MONTHS = dates;
+            initSelect();
+            // 첫 화면 로드 시 가장 최근 날짜의 데이터를 가져옴
+            getReportMonthsExpense(finalUserNo, getSelected());
         },
         error: function(xhr) {
-            alert("데이터 로드 실패: " + xhr.status);
+            if (xhr.status !== 401) {
+                alert("데이터 로드 실패: " + xhr.status);
+            }
         }
     });
 }
@@ -33,16 +54,20 @@ function getPaymentDates(userNo) {
  * 고정지출 등록 페이지 전용 날짜 로드
  */
 function getPaymentDatesForFixed(userNo) {
+    const finalUserNo = userNo || sessionStorage.getItem("userNo") || "";
+
     $.ajax({
         method: "GET",
-        url: "paymentDates", // 서블릿 경로
-        data: { "userNo": userNo },
+        url: "paymentDates",
+        data: { "userNo": finalUserNo },
         success: function(dates) {
             // fixed.js에 있는 셀렉트 박스 초기화 함수 호출
             initApplyMonthSelect(dates);
         },
         error: function(xhr) {
-            alert("날짜 목록 로드 실패: " + xhr.status);
+            if (xhr.status !== 401) {
+                alert("날짜 목록 로드 실패: " + xhr.status);
+            }
         }
     });
 }
@@ -55,7 +80,6 @@ function updateFixedCost(payload) {
         method: "POST",
         url: "addfixedcost",
         data: { 
-            "userNo": payload.userNo,
             "cost": payload.amount,
             "category": payload.category, // 예: INSU_AMDEC
             "date": payload.month         // 예: 2023q3
@@ -73,7 +97,9 @@ function updateFixedCost(payload) {
             }
         },
         error: function(xhr) {
-            alert("서버 통신 중 에러가 발생하였습니다: " + xhr.status);
+            if (xhr.status !== 401) {
+                alert("서버 통신 중 에러가 발생하였습니다: " + xhr.status);
+            }
         }
     });
 }
