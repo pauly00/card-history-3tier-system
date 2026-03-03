@@ -25,8 +25,8 @@ http://localhost/login.html
 **1. 로그인**
 <img width="1911" height="857" alt="스크린샷 2026-02-27 103435" src="https://github.com/user-attachments/assets/cc27be11-a97e-4882-8c36-8f93346d3eb2" />
 - 고객 번호 기반 간편 로그인
-- 세션 관리 및 중복 로그인 처리
-- 로그아웃 시 세션 완전 폐기 (쿠키 삭제 포함)
+- WAS 통합 세션 관리 및 로그인 처리
+- 로그아웃 시 세션 완전 폐기 (쿠키 즉시 삭제 포함)
 
 **2. 월별 소비 패턴**
 <img width="1882" height="861" alt="image" src="https://github.com/user-attachments/assets/f15e6806-2f79-4ca1-9d74-6a25c497e00d" />
@@ -56,7 +56,7 @@ http://localhost/login.html
         │ HTTP 요청 
         ▼
 ┌─────────────────────┐
-│  Presentation 계층   │  Nginx (Port 80) (리버스 프록시 / 로드밸런서)
+│  Presentation 계층  │  Nginx (Port 80) (리버스 프록시 / 로드밸런서)
 └─────────────────────┘
          │ 부하분산
    ┌─────┴─────┐
@@ -68,7 +68,7 @@ http://localhost/login.html
    │  HikariCP  │
    ▼            ▼
 ┌──────────────────────────────────────────┐
-│              Data 계층                    │
+│              Data 계층                   │
 │                                          │
 │          MySQL Router (Docker)           │
 │     6446 (R/W)        6447 (R/O)         │
