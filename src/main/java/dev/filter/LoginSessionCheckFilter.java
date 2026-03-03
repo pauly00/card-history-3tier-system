@@ -46,9 +46,14 @@ public class LoginSessionCheckFilter implements Filter {
     private boolean isExcluded(String path) {
         return path.endsWith(LOGIN_PAGE)
             || path.endsWith(LOGIN_ENDPOINT)
-            || path.contains("/static/")
+            || path.contains("/resources/")
             || path.endsWith(".css")
-            || path.endsWith(".js");
+            || path.endsWith(".js")
+            || path.endsWith(".png")
+            || path.endsWith(".jpg")
+            || path.endsWith(".jpeg")
+            || path.endsWith(".gif")
+            || path.endsWith(".ico");
     }
 
     private boolean isAuthenticated(HttpSession session) {
@@ -70,7 +75,7 @@ public class LoginSessionCheckFilter implements Filter {
         }
 
         // JSESSIONID 쿠키 삭제 (Path 주의: 컨텍스트 경로에 맞춤)
-        deleteCookie(request, response, "JSESSIONID");
+        deleteCookie(request, response, "REDIS_SESSION_ID");
 
         if (isAjaxRequest(request)) {
             sendJsonError(response);
@@ -84,9 +89,10 @@ public class LoginSessionCheckFilter implements Filter {
     }
 
     private void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, null);
+        Cookie cookie = new Cookie(name, "");
         cookie.setMaxAge(0);
-        cookie.setPath(request.getContextPath().isEmpty() ? "/" : request.getContextPath());
+        cookie.setPath("/");  // RedisSessionFilter와 동일한 Path
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 

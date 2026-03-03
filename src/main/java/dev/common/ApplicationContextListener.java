@@ -29,7 +29,7 @@ public class ApplicationContextListener implements ServletContextListener {
         HikariConfig sourceConfig  = new HikariConfig();
         // 필수 설정값(별도의 설정파일로 분리 가능, ex. jdbc.properties)
         // port : 
-        sourceConfig .setJdbcUrl("jdbc:mysql://localhost:6446/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8");
+        sourceConfig .setJdbcUrl("jdbc:mysql://mysql-router:6446/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8");
         sourceConfig .setUsername("root");
         sourceConfig .setPassword("root1234");
         sourceConfig.setReadOnly(false);
@@ -46,7 +46,7 @@ public class ApplicationContextListener implements ServletContextListener {
         ctx.setAttribute("SOURCE_DATA_SOURCE", sourceDs);
         
         HikariConfig replicaConfig = new HikariConfig();
-        replicaConfig.setJdbcUrl("jdbc:mysql://localhost:6447/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8");
+        replicaConfig.setJdbcUrl("jdbc:mysql://mysql-router:6447/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8");
         replicaConfig.setUsername("root");
         replicaConfig.setPassword("root1234");
         replicaConfig.setReadOnly(true);
@@ -72,4 +72,6 @@ public class ApplicationContextListener implements ServletContextListener {
     public static DataSource getReplicaDataSource(ServletContext ctx) {
         return (DataSource) ctx.getAttribute("REPLICA_DATA_SOURCE");
     }
+    
+    
 }

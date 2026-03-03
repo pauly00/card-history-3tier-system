@@ -55,7 +55,6 @@ public class LoginServlet extends HttpServlet {
 					// 세션 생성 및 정보 저장
 					HttpSession session = request.getSession(); // true가 기본값
 					session.setAttribute("loggedInUser", SEQ);
-
 					// 메인 화면으로 리다이렉트
 					response.sendRedirect(request.getContextPath() + "/index.html");
 				} else {
